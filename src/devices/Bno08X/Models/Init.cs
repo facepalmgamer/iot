@@ -1,179 +1,84 @@
-﻿namespace Namespace
+﻿using System.Collections;
+
+namespace Iot.Device.Bno08X
 {
 
-    using unpack_from = @struct.unpack_from;
-
-    using pack_into = @struct.pack_into;
-
-    using namedtuple = collections.namedtuple;
-
-    using time;
-
-    using @const = micropython.@const;
-
-    using channels = debug.channels;
-
-    using reports = debug.reports;
-
-    using System;
-
-    using System.Collections.Generic;
-
-    using System.Linq;
-
-    using System.Collections;
-
-    using digitalio;
-
-    public static class Module
+    public static partial class Module
     {
 
-        static Module()
+
+        public static string @__version__ = "0.0.0";
+
+        public static string @__repo__ = "new git link"; //TODO
+
+        public static int BNO_CHANNEL_SHTP_COMMAND = 0;
+        public static int BNO_CHANNEL_EXE = 1;
+        public static int _BNO_CHANNEL_CONTROL = 2;
+        public static int _BNO_CHANNEL_INPUT_SENSOR_REPORTS = 3;
+        public static int _BNO_CHANNEL_WAKE_INPUT_SENSOR_REPORTS = 4;
+        public static int _BNO_CHANNEL_GYRO_ROTATION_VECTOR = 5;
+
+        public static int _GET_FEATURE_REQUEST = 0xFE;
+        public static int _SET_FEATURE_COMMAND = 0xFD;
+        public static int _GET_FEATURE_RESPONSE = 0xFC;
+        public static int _BASE_TIMESTAMP = 0xFB;
+        public static int _TIMESTAMP_REBASE = 0xFA;
+
+        public static int _SHTP_REPORT_PRODUCT_ID_RESPONSE = 0xF8;
+        public static int _SHTP_REPORT_PRODUCT_ID_REQUEST = 0xF9;
+        public static int _FRS_WRITE_REQUEST = 0xF7;
+        public static int _FRS_WRITE_DATA = 0xF6;
+        public static int _FRS_WRITE_RESPONSE = 0xF5;
+        public static int _FRS_READ_REQUEST = 0xF4;
+        public static int _FRS_READ_RESPONSE = 0xF3;
+        public static int _COMMAND_REQUEST = 0xF2;
+        public static int _COMMAND_RESPONSE = 0xF1;
+
+        public static int _SAVE_DCD = 0x6;
+        public static int _ME_CALIBRATE = 0x7;
+        public static int _ME_CAL_CONFIG = 0x00;
+        public static int _ME_GET_CAL = 0x01;
+
+        public static int BNO_REPORT_ACCELEROMETER = 0x01;
+        public static int BNO_REPORT_GYROSCOPE = 0x02;
+        public static int BNO_REPORT_MAGNETOMETER = 0x03;
+        public static int BNO_REPORT_LINEAR_ACCELERATION = 0x04;
+        public static int BNO_REPORT_ROTATION_VECTOR = 0x05;
+        public static int BNO_REPORT_GAME_ROTATION_VECTOR = 0x08;
+        public static int BNO_REPORT_GEOMAGNETIC_ROTATION_VECTOR = 0x09;
+        public static int BNO_REPORT_STEP_COUNTER = 0x11;
+        public static int BNO_REPORT_RAW_ACCELEROMETER = 0x14;
+        public static int BNO_REPORT_RAW_GYROSCOPE = 0x15;
+        public static int BNO_REPORT_RAW_MAGNETOMETER = 0x16;
+        public static int BNO_REPORT_SHAKE_DETECTOR = 0x19;
+        public static int BNO_REPORT_STABILITY_CLASSIFIER = 0x13;
+        public static int BNO_REPORT_ACTIVITY_CLASSIFIER = 0x1E;
+        public static int BNO_REPORT_GYRO_INTEGRATED_ROTATION_VECTOR = 0x2A;
+
+        public static int _DEFAULT_REPORT_INTERVAL = 50000;
+
+        public static double _QUAT_READ_TIMEOUT = 0.5;
+        public const double _PACKET_READ_TIMEOUT = 2.0;
+        public static double _FEATURE_ENABLE_TIMEOUT = 2.0;
+        public static double _DEFAULT_TIMEOUT = 2.0;
+        public static int _BNO08X_CMD_RESET = 0x01;
+        public static int _QUAT_Q_POINT = 14;
+        public static int _BNO_HEADER_LEN = 4;
+
+        public static double _Q_POINT_14_SCALAR = Math.Pow(2, 14 * -1);
+        public static double _Q_POINT_12_SCALAR = Math.Pow(2, 12 * -1);
+        public static double _Q_POINT_9_SCALAR = Math.Pow(2, 9 * -1);
+        public static double _Q_POINT_8_SCALAR = Math.Pow(2, 8 * -1);
+        public static double _Q_POINT_4_SCALAR = Math.Pow(2, 4 * -1);
+
+        public static double _GYRO_SCALAR = _Q_POINT_9_SCALAR;
+        public static double _ACCEL_SCALAR = _Q_POINT_8_SCALAR;
+        public static double _QUAT_SCALAR = _Q_POINT_14_SCALAR;
+        public static double _GEO_QUAT_SCALAR = _Q_POINT_12_SCALAR;
+        public static double _MAG_SCALAR = _Q_POINT_4_SCALAR;
+
+        public static Dictionary<int, int> _REPORT_LENGTHS = new Dictionary<int, int>
         {
-            @"
-`adafruit_bno08x`
-================================================================================
-
-Helper library for the Hillcrest Laboratories BNO08x IMUs
-
-
-* Author(s): Bryan Siepert
-
-Implementation Notes
---------------------
-
-**Hardware:**
-
-* `Adafruit BNO08x Breakout <https:www.adafruit.com/products/4754>`_
-
-**Software and Dependencies:**
-
-* Adafruit CircuitPython firmware for the supported boards:
-  https:# github.com/adafruit/circuitpython/releases
-
-* `Adafruit's Bus Device library <https:# github.com/adafruit/Adafruit_CircuitPython_BusDevice>`_
-";
-        }
-
-        public static object @__version__ = "0.0.0+auto.0";
-
-        public static object @__repo__ = "https:# github.com/adafruit/Adafruit_CircuitPython_BNO08x.git";
-
-        public static object BNO_CHANNEL_SHTP_COMMAND = @const(0);
-
-        public static object BNO_CHANNEL_EXE = @const(1);
-
-        public static object _BNO_CHANNEL_CONTROL = @const(2);
-
-        public static object _BNO_CHANNEL_INPUT_SENSOR_REPORTS = @const(3);
-
-        public static object _BNO_CHANNEL_WAKE_INPUT_SENSOR_REPORTS = @const(4);
-
-        public static object _BNO_CHANNEL_GYRO_ROTATION_VECTOR = @const(5);
-
-        public static object _GET_FEATURE_REQUEST = @const(0xFE);
-
-        public static object _SET_FEATURE_COMMAND = @const(0xFD);
-
-        public static object _GET_FEATURE_RESPONSE = @const(0xFC);
-
-        public static object _BASE_TIMESTAMP = @const(0xFB);
-
-        public static object _TIMESTAMP_REBASE = @const(0xFA);
-
-        public static object _SHTP_REPORT_PRODUCT_ID_RESPONSE = @const(0xF8);
-
-        public static object _SHTP_REPORT_PRODUCT_ID_REQUEST = @const(0xF9);
-
-        public static object _FRS_WRITE_REQUEST = @const(0xF7);
-
-        public static object _FRS_WRITE_DATA = @const(0xF6);
-
-        public static object _FRS_WRITE_RESPONSE = @const(0xF5);
-
-        public static object _FRS_READ_REQUEST = @const(0xF4);
-
-        public static object _FRS_READ_RESPONSE = @const(0xF3);
-
-        public static object _COMMAND_REQUEST = @const(0xF2);
-
-        public static object _COMMAND_RESPONSE = @const(0xF1);
-
-        public static object _SAVE_DCD = @const(0x6);
-
-        public static object _ME_CALIBRATE = @const(0x7);
-
-        public static object _ME_CAL_CONFIG = @const(0x00);
-
-        public static object _ME_GET_CAL = @const(0x01);
-
-        public static object BNO_REPORT_ACCELEROMETER = @const(0x01);
-
-        public static object BNO_REPORT_GYROSCOPE = @const(0x02);
-
-        public static object BNO_REPORT_MAGNETOMETER = @const(0x03);
-
-        public static object BNO_REPORT_LINEAR_ACCELERATION = @const(0x04);
-
-        public static object BNO_REPORT_ROTATION_VECTOR = @const(0x05);
-
-        public static object BNO_REPORT_GAME_ROTATION_VECTOR = @const(0x08);
-
-        public static object BNO_REPORT_GEOMAGNETIC_ROTATION_VECTOR = @const(0x09);
-
-        public static object BNO_REPORT_STEP_COUNTER = @const(0x11);
-
-        public static object BNO_REPORT_RAW_ACCELEROMETER = @const(0x14);
-
-        public static object BNO_REPORT_RAW_GYROSCOPE = @const(0x15);
-
-        public static object BNO_REPORT_RAW_MAGNETOMETER = @const(0x16);
-
-        public static object BNO_REPORT_SHAKE_DETECTOR = @const(0x19);
-
-        public static object BNO_REPORT_STABILITY_CLASSIFIER = @const(0x13);
-
-        public static object BNO_REPORT_ACTIVITY_CLASSIFIER = @const(0x1E);
-
-        public static object BNO_REPORT_GYRO_INTEGRATED_ROTATION_VECTOR = @const(0x2A);
-
-        public static object _DEFAULT_REPORT_INTERVAL = @const(50000);
-
-        public static object _QUAT_READ_TIMEOUT = 0.5;
-
-        public static object _PACKET_READ_TIMEOUT = 2.0;
-
-        public static object _FEATURE_ENABLE_TIMEOUT = 2.0;
-
-        public static object _DEFAULT_TIMEOUT = 2.0;
-
-        public static object _BNO08X_CMD_RESET = @const(0x01);
-
-        public static object _QUAT_Q_POINT = @const(14);
-
-        public static object _BNO_HEADER_LEN = @const(4);
-
-        public static object _Q_POINT_14_SCALAR = Math.Pow(2, 14 * -1);
-
-        public static object _Q_POINT_12_SCALAR = Math.Pow(2, 12 * -1);
-
-        public static object _Q_POINT_9_SCALAR = Math.Pow(2, 9 * -1);
-
-        public static object _Q_POINT_8_SCALAR = Math.Pow(2, 8 * -1);
-
-        public static object _Q_POINT_4_SCALAR = Math.Pow(2, 4 * -1);
-
-        public static object _GYRO_SCALAR = _Q_POINT_9_SCALAR;
-
-        public static object _ACCEL_SCALAR = _Q_POINT_8_SCALAR;
-
-        public static object _QUAT_SCALAR = _Q_POINT_14_SCALAR;
-
-        public static object _GEO_QUAT_SCALAR = _Q_POINT_12_SCALAR;
-
-        public static object _MAG_SCALAR = _Q_POINT_4_SCALAR;
-
-        public static object _REPORT_LENGTHS = new Dictionary<object, object> {
             {
                 _SHTP_REPORT_PRODUCT_ID_RESPONSE,
                 16},
@@ -191,9 +96,12 @@ Implementation Notes
                 5},
             {
                 _TIMESTAMP_REBASE,
-                5}};
+                5
+            }
+        };
 
-        public static object _RAW_REPORTS = new Dictionary<object, object> {
+        public static Dictionary<int, int> _RAW_REPORTS = new Dictionary<int, int>
+        {
             {
                 BNO_REPORT_RAW_ACCELEROMETER,
                 BNO_REPORT_ACCELEROMETER},
@@ -202,12 +110,16 @@ Implementation Notes
                 BNO_REPORT_GYROSCOPE},
             {
                 BNO_REPORT_RAW_MAGNETOMETER,
-                BNO_REPORT_MAGNETOMETER}};
+                BNO_REPORT_MAGNETOMETER
+            }
+        };
 
-        public static object _AVAIL_SENSOR_REPORTS = new Dictionary<object, object> {
+        public static Dictionary<int, (double, int, int)> _AVAIL_SENSOR_REPORTS = new Dictionary<int, (double, int, int)>
+        {
             {
                 BNO_REPORT_ACCELEROMETER,
-                (_Q_POINT_8_SCALAR, 3, 10)},
+                (_Q_POINT_8_SCALAR, 3, 10)
+            },
             {
                 BNO_REPORT_GYROSCOPE,
                 (_Q_POINT_9_SCALAR, 3, 10)},
@@ -246,12 +158,15 @@ Implementation Notes
                 (1, 3, 16)},
             {
                 BNO_REPORT_RAW_MAGNETOMETER,
-                (1, 3, 16)}};
+                (1, 3, 16)
+            }
+        };
 
-        public static object _INITIAL_REPORTS = new Dictionary<object, object> {
+
+        public static Dictionary<int, object> _INITIAL_REPORTS = new Dictionary<int, object> {
             {
                 BNO_REPORT_ACTIVITY_CLASSIFIER,
-                new Dictionary<object, object> {
+                new Dictionary<string, object> {
                     {
                         "Tilting",
                         -1},
@@ -298,18 +213,20 @@ Implementation Notes
                 BNO_REPORT_GEOMAGNETIC_ROTATION_VECTOR,
                 (0.0, 0.0, 0.0, 0.0)}};
 
-        public static object _ENABLED_ACTIVITIES = 0x1FF;
+        public static int _ENABLED_ACTIVITIES = 0x1FF;
 
-        public static object DATA_BUFFER_SIZE = @const(512);
+        public static int DATA_BUFFER_SIZE = 512;
 
-        public static object PacketHeader = namedtuple("PacketHeader", new List<object> {
-            "channel_number",
-            "sequence_number",
-            "data_length",
-            "packet_byte_count"
-        });
+        public enum PacketHeader
+        {
+            channel_number = 0,
+            sequence_number = 1,
+            data_length = 2,
+            packet_byte_count = 3
+        };
 
-        public static object REPORT_ACCURACY_STATUS = new List<object> {
+        public static string[] REPORT_ACCURACY_STATUS =
+        {
             "Accuracy Unreliable",
             "Low Accuracy",
             "Medium Accuracy",
@@ -322,23 +239,24 @@ Implementation Notes
         {
         }
 
-        public static object _elapsed(object start_time)
+        //TODO
+        public static int _elapsed(object start_time)
         {
             return time.monotonic() - start_time;
         }
 
         //########### PACKET PARSING ###########################
         // Parses reports with only 16-bit fields
-        public static object _parse_sensor_report_data(object report_bytes)
+        public static (List<double>, double) _parse_sensor_report_data(int[] report_bytes)
         {
-            object format_str;
-            var data_offset = 4;
-            var report_id = report_bytes[0];
-            var _tup_1 = _AVAIL_SENSOR_REPORTS[report_id];
-            var scalar = _tup_1.Item1;
-            var count = _tup_1.Item2;
-            var _report_length = _tup_1.Item3;
-            if (_RAW_REPORTS.Contains(report_id))
+            string format_str;
+            int data_offset = 4;
+            int report_id = report_bytes[0];
+            (double, int, int) _tup_1 = _AVAIL_SENSOR_REPORTS[report_id];
+            double scalar = _tup_1.Item1;
+            int count = _tup_1.Item2;
+            int _report_length = _tup_1.Item3;
+            if (_RAW_REPORTS.Values.Contains(report_id))
             {
                 // raw reports are unsigned
                 format_str = "<H";
@@ -347,29 +265,28 @@ Implementation Notes
             {
                 format_str = "<h";
             }
-            var results = new List<object>();
-            var accuracy = unpack_from("<B", report_bytes, offset: 2)[0];
+            List<double> results = new List<double>();
+            int accuracy = UnpackFrom("<B", report_bytes, 2)[0];
             accuracy |= 0b11;
             foreach (var _offset_idx in Enumerable.Range(0, count))
             {
-                var total_offset = data_offset + _offset_idx * 2;
-                var raw_data = unpack_from(format_str, report_bytes, offset: total_offset)[0];
-                var scaled_data = raw_data * scalar;
-                results.append(scaled_data);
+                int total_offset = data_offset + _offset_idx * 2;
+                int raw_data = UnpackFrom(format_str, report_bytes, total_offset)[0];
+                double scaled_data = raw_data * scalar;
+                results.Add(scaled_data);
             }
-            var results_tuple = tuple(results);
-            return (results_tuple, accuracy);
+            return (results, accuracy);
         }
 
-        public static object _parse_step_couter_report(object report_bytes)
+        public static int _parse_step_couter_report(int[] report_bytes)
         {
-            return unpack_from("<H", report_bytes, offset: 8)[0];
+            return UnpackFrom("<H", report_bytes, offset: 8)[0];
         }
 
-        public static object _parse_stability_classifier_report(object report_bytes)
+        public static string _parse_stability_classifier_report(int[] report_bytes)
         {
-            var classification_bitfield = unpack_from("<B", report_bytes, offset: 4)[0];
-            return new List<object> {
+            int classification_bitfield = UnpackFrom("<B", report_bytes, offset: 4)[0];
+            return new List<string> {
                 "Unknown",
                 "On Table",
                 "Stationary",
@@ -385,9 +302,9 @@ Implementation Notes
         // report_interval
         // batch_interval_word
         // sensor_specific_configuration_word
-        public static object _parse_get_feature_response_report(object report_bytes)
+        public static object _parse_get_feature_response_report(int[] report_bytes)
         {
-            return unpack_from("<BBBHIII", report_bytes);
+            return UnpackFrom("<BBBHIII", report_bytes);
         }
 
         // 0 Report ID = 0x1E
@@ -397,9 +314,9 @@ Implementation Notes
         // 4 Page Number + EOS
         // 5 Most likely state
         // 6-15 Classification (10 x Page Number) + confidence
-        public static object _parse_activity_classifier_report(object report_bytes)
+        public static Dictionary<string, int> _parse_activity_classifier_report(int[] report_bytes)
         {
-            var activities = new List<object> {
+            List<string> activities = new List<string> {
                 "Unknown",
                 "In-Vehicle",
                 "On-Bicycle",
@@ -410,48 +327,49 @@ Implementation Notes
                 "Running",
                 "OnStairs"
             };
-            var end_and_page_number = unpack_from("<B", report_bytes, offset: 4)[0];
+            int end_and_page_number = UnpackFrom("<B", report_bytes, 4)[0];
             // last_page = (end_and_page_number & 0b10000000) > 0
-            var page_number = end_and_page_number & 0x7F;
-            var most_likely = unpack_from("<B", report_bytes, offset: 5)[0];
-            var confidences = unpack_from("<BBBBBBBBB", report_bytes, offset: 6);
-            var classification = new Dictionary<object, object>
+            int page_number = end_and_page_number & 0x7F;
+            int most_likely = UnpackFrom("<B", report_bytes, 5)[0];
+            int[] confidences = UnpackFrom("<BBBBBBBBB", report_bytes, offset: 6);
+            Dictionary<string, int> classification = new Dictionary<string, int>();
+
+            classification.Add(activities[most_likely], 100000);
+
+            foreach (Tuple<int, int> _tup_1 in confidences.Select((_p_1, _p_2) => Tuple.Create(_p_2, _p_1)))
             {
-            };
-            classification["most_likely"] = activities[most_likely];
-            foreach (var _tup_1 in confidences.Select((_p_1, _p_2) => Tuple.Create(_p_2, _p_1)))
-            {
-                var idx = _tup_1.Item1;
-                var raw_confidence = _tup_1.Item2;
-                var confidence = 10 * page_number + raw_confidence;
-                var activity_string = activities[idx];
+                int idx = _tup_1.Item1;
+                int raw_confidence = _tup_1.Item2;
+                int confidence = 10 * page_number + raw_confidence;
+                string activity_string = activities[idx];
                 classification[activity_string] = confidence;
             }
             return classification;
         }
 
-        public static object _parse_shake_report(object report_bytes)
+        public static bool _parse_shake_report(int[] report_bytes)
         {
-            var shake_bitfield = unpack_from("<H", report_bytes, offset: 4)[0];
+            int shake_bitfield = UnpackFrom("<H", report_bytes, offset: 4)[0];
             return (shake_bitfield & 0x111) > 0;
         }
 
         // Parse the fields of a product id report
-        public static object parse_sensor_id(object buffer)
+        public static int[] parse_sensor_id(int[] buffer)
         {
             if (!(buffer[0] == _SHTP_REPORT_PRODUCT_ID_RESPONSE))
             {
-                throw AttributeError(String.Format("Wrong report id for sensor id: %s", hex(buffer[0])));
+                throw AttributeError(String.Format("Wrong report id for sensor id: %s", Convert.ToByte(buffer[0])));
             }
-            var sw_major = unpack_from("<B", buffer, offset: 2)[0];
-            var sw_minor = unpack_from("<B", buffer, offset: 3)[0];
-            var sw_patch = unpack_from("<H", buffer, offset: 12)[0];
-            var sw_part_number = unpack_from("<I", buffer, offset: 4)[0];
-            var sw_build_number = unpack_from("<I", buffer, offset: 8)[0];
-            return (sw_part_number, sw_major, sw_minor, sw_patch, sw_build_number);
+            int sw_major = UnpackFrom("<B", buffer, offset: 2)[0];
+            int sw_minor = UnpackFrom("<B", buffer, offset: 3)[0];
+            int sw_patch = UnpackFrom("<H", buffer, offset: 12)[0];
+            int sw_part_number = UnpackFrom("<I", buffer, offset: 4)[0];
+            int sw_build_number = UnpackFrom("<I", buffer, offset: 8)[0];
+            int[] x = { sw_part_number, sw_major, sw_minor, sw_patch, sw_build_number };
+            return x;
         }
 
-        public static object _parse_command_response(object report_bytes)
+        public static (int[], int[]) _parse_command_response(int[] report_bytes)
         {
             // CMD response report:
             // 0 Report ID = 0xF1
@@ -461,8 +379,8 @@ Implementation Notes
             // 4 Response sequence number
             // 5 R0-10 A set of response values. The interpretation of these values is specific
             // to the response for each command.
-            var report_body = unpack_from("<BBBBB", report_bytes);
-            var response_values = unpack_from("<BBBBBBBBBBB", report_bytes, offset: 5);
+            int[] report_body = UnpackFrom("<BBBBB", report_bytes);
+            int[] response_values = UnpackFrom("<BBBBBBBBBBB", report_bytes, offset: 5);
             return (report_body, response_values);
         }
 
@@ -491,30 +409,31 @@ Implementation Notes
             }
         }
 
-        public static object _report_length(object report_id)
+        public static int _report_length(int report_id)
         {
             if (report_id < 0xF0)
             {
                 // it's a sensor report
-                return _AVAIL_SENSOR_REPORTS[report_id][2];
+                return _AVAIL_SENSOR_REPORTS[report_id].Item2;
             }
             return _REPORT_LENGTHS[report_id];
         }
 
-        public static object _separate_batch(object packet, object report_slices)
+        public static object _separate_batch(Packet packet, object report_slices)
         {
             // get first report id, loop up its report length
             // read that many bytes, parse them
-            var next_byte_index = 0;
-            while (next_byte_index < packet.header.data_length)
+
+            int next_byte_index = 0;
+            while (next_byte_index < packet.header[2])
             {
-                var report_id = packet.data[next_byte_index];
-                var required_bytes = _report_length(report_id);
-                var unprocessed_byte_count = packet.header.data_length - next_byte_index;
+                int report_id = packet.data[next_byte_index];
+                int required_bytes = _report_length(report_id);
+                int unprocessed_byte_count = packet.header[2] - next_byte_index;
                 // handle incomplete remainder
                 if (unprocessed_byte_count < required_bytes)
                 {
-                    throw RuntimeError("Unprocessable Batch bytes", unprocessed_byte_count);
+                    Console.WriteLine("Unprocessable Batch bytes", unprocessed_byte_count);
                 }
                 // we have enough bytes to read
                 // add a slice to the list that was passed in
@@ -525,26 +444,29 @@ Implementation Notes
                 });
                 next_byte_index = next_byte_index + required_bytes;
             }
+            return report_slices;
         }
 
         // A class representing a Hillcrest LaboratorySensor Hub Transport packet
         public class Packet
         {
+            public int[] data;
+            public int[] header;
 
-            public Packet(object packet_bytes)
+            public Packet(int[] packet_bytes)
             {
-                this.header = this.header_from_buffer(packet_bytes);
-                var data_end_index = this.header.data_length + _BNO_HEADER_LEN;
-                this.data = packet_bytes[_BNO_HEADER_LEN::data_end_index];
+                header = header_from_buffer(packet_bytes);
+                var data_end_index = header[2] + _BNO_HEADER_LEN;
+                Array.Copy(packet_bytes, _BNO_HEADER_LEN, data, 0, data_end_index - _BNO_HEADER_LEN);
             }
 
             public override object ToString()
             {
-                var length = this.header.packet_byte_count;
-                var outstr = "\n\t\t********** Packet *************\n";
+                int length = header[3];
+                string outstr = "\n\t\t********** Packet *************\n";
                 outstr += "DBG::\t\t HEADER:\n";
-                outstr += String.Format("DBG::\t\t Data Len: %d\n", this.header.data_length);
-                outstr += String.Format("DBG::\t\t Channel: %s (%d)\n", channels[this.channel_number], this.channel_number);
+                outstr += String.Format("DBG::\t\t Data Len: %d\n", header[2]);
+                outstr += String.Format("DBG::\t\t Channel: %s (%d)\n", channels[channel_number], this.channel_number);
                 if (new List<object> {
                     _BNO_CHANNEL_CONTROL,
                     _BNO_CHANNEL_INPUT_SENSOR_REPORTS
@@ -587,45 +509,43 @@ Implementation Notes
             }
 
             // The Packet's Report ID
-            public object report_id
+            public int report_id
             {
                 get
                 {
-                    return this.data[0];
+                    return data[0];
                 }
             }
 
             // The packet channel
-            public object channel_number
+            public int channel_number
             {
                 get
                 {
-                    return this.header.channel_number;
+                    return header[0];
                 }
             }
 
             // Creates a `PacketHeader` object from a given buffer
-            [classmethod]
-            public static object header_from_buffer(object cls, object packet_bytes)
+            public static int[] header_from_buffer(int[] packet_bytes)
             {
-                var packet_byte_count = unpack_from("<H", packet_bytes)[0];
+                int packet_byte_count = UnpackFrom("<H", packet_bytes)[0];
                 packet_byte_count |= ~0x8000;
-                var channel_number = unpack_from("<B", packet_bytes, offset: 2)[0];
-                var sequence_number = unpack_from("<B", packet_bytes, offset: 3)[0];
-                var data_length = max(0, packet_byte_count - 4);
-                var header = PacketHeader(channel_number, sequence_number, data_length, packet_byte_count);
+                int channel_number = UnpackFrom("<B", packet_bytes, offset: 2)[0];
+                int sequence_number = UnpackFrom("<B", packet_bytes, offset: 3)[0];
+                int data_length = Math.Max(0, packet_byte_count - 4);
+                int[] header = { channel_number, sequence_number, data_length, packet_byte_count };
                 return header;
             }
 
             // Returns True if the header is an error condition
-            [classmethod]
-            public static object is_error(object cls, object header)
+            public static object is_error(int[] header)
             {
-                if (header.channel_number > 5)
+                if (header[0] > 5)
                 {
                     return true;
                 }
-                if (header.packet_byte_count == 0xFFFF && header.sequence_number == 0xFF)
+                if (header[3] == 0xFFFF && header[1] == 0xFF)
                 {
                     return true;
                 }
@@ -640,17 +560,36 @@ Implementation Notes
         //     
         public class BNO08X
         {
+            bool _debug;
+            object _reset;
+            int[] _data_buffer;
+            object _command_buffer;
+            object _packet_slices;
 
-            public BNO08X(object reset = null, object debug = false)
+            List<int> _sequence_number;
+            Dictionary<string, Dictionary<object, object>> _two_ended_sequence_numbers;
+
+            int _dcd_saved_at;
+            int _me_calibration_started_at;
+            bool _calibration_complete;
+            int _magnetometer_accuracy;
+            bool _wait_for_initialize;
+            bool _init_complete;
+            bool _id_read;
+
+            Dictionary<int, bool> _readings;
+
+            public BNO08X(object reset = null, bool debug = false)
             {
-                this._debug = debug;
-                this._reset = reset;
-                this._dbg("********** __init__ *************");
-                this._data_buffer = bytearray(DATA_BUFFER_SIZE);
-                this._command_buffer = bytearray(12);
-                this._packet_slices = new List<object>();
+                _debug = debug;
+                _reset = reset;
+                _dbg("********** __init__ *************");
+                _data_buffer = bytearray(DATA_BUFFER_SIZE);
+                _command_buffer = bytearray(12);
+                _packet_slices = new List<object>();
                 // TODO: this is wrong there should be one per channel per direction
-                this._sequence_number = new List<object> {
+                _sequence_number = new List<int>
+                {
                     0,
                     0,
                     0,
@@ -658,39 +597,39 @@ Implementation Notes
                     0,
                     0
                 };
-                this._two_ended_sequence_numbers = new Dictionary<object, object> {
+                _two_ended_sequence_numbers = new Dictionary<string, Dictionary<object, object>>
+                {
                     {
                         "send",
-                        new Dictionary<object, object> {
-                        }},
+                        new Dictionary<object, object> ()
+                    },
                     {
                         "receive",
-                        new Dictionary<object, object> {
-                        }}};
-                this._dcd_saved_at = -1;
-                this._me_calibration_started_at = -1;
-                this._calibration_complete = false;
-                this._magnetometer_accuracy = 0;
-                this._wait_for_initialize = true;
-                this._init_complete = false;
-                this._id_read = false;
-                // for saving the most recent reading when decoding several packets
-                this._readings = new Dictionary<object, object>
-                {
+                        new Dictionary<object, object>()
+                    }
                 };
-                this.initialize();
+                _dcd_saved_at = -1;
+                _me_calibration_started_at = -1;
+                _calibration_complete = false;
+                _magnetometer_accuracy = 0;
+                _wait_for_initialize = true;
+                _init_complete = false;
+                _id_read = false;
+                // for saving the most recent reading when decoding several packets
+                _readings = new Dictionary<int, bool>();
+                initialize();
             }
 
             // Initialize the sensor
-            public virtual object initialize()
+            public virtual void initialize()
             {
                 foreach (var _ in Enumerable.Range(0, 3))
                 {
-                    this.hard_reset();
-                    this.soft_reset();
+                    hard_reset();
+                    soft_reset();
                     try
                     {
-                        if (this._check_id())
+                        if (_check_id())
                         {
                             break;
                         }
@@ -713,9 +652,10 @@ Implementation Notes
                     {
                         return this._readings[BNO_REPORT_MAGNETOMETER];
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
-                        throw RuntimeError("No magfield report found, is it enabled?");
+                        Console.WriteLine("No magfield report found, is it enabled?");
+                        throw;
                     }
                 }
             }
@@ -730,9 +670,10 @@ Implementation Notes
                     {
                         return this._readings[BNO_REPORT_ROTATION_VECTOR];
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
-                        throw RuntimeError("No quaternion report found, is it enabled?");
+                        Console.WriteLine("No quaternion report found, is it enabled?");
+                        throw;
                     }
                 }
             }
@@ -747,9 +688,10 @@ Implementation Notes
                     {
                         return this._readings[BNO_REPORT_GEOMAGNETIC_ROTATION_VECTOR];
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
-                        throw RuntimeError("No geomag quaternion report found, is it enabled?");
+                        Console.WriteLine("No geomag quaternion report found, is it enabled?");
+                        throw;
                     }
                 }
             }
@@ -767,9 +709,10 @@ Implementation Notes
                     {
                         return this._readings[BNO_REPORT_GAME_ROTATION_VECTOR];
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
-                        throw RuntimeError("No game quaternion report found, is it enabled?");
+                        Console.WriteLine("No game quaternion report found, is it enabled?");
+                        throw;
                     }
                 }
             }
@@ -784,9 +727,10 @@ Implementation Notes
                     {
                         return this._readings[BNO_REPORT_STEP_COUNTER];
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
-                        throw RuntimeError("No steps report found, is it enabled?");
+                        Console.WriteLine("No steps report found, is it enabled?");
+                        throw;
                     }
                 }
             }
@@ -802,9 +746,10 @@ Implementation Notes
                     {
                         return this._readings[BNO_REPORT_LINEAR_ACCELERATION];
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
-                        throw RuntimeError("No lin. accel report found, is it enabled?");
+                        Console.WriteLine("No lin. accel report found, is it enabled?");
+                        throw;
                     }
                 }
             }
@@ -820,9 +765,10 @@ Implementation Notes
                     {
                         return this._readings[BNO_REPORT_ACCELEROMETER];
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
-                        throw RuntimeError("No accel report found, is it enabled?");
+                        Console.WriteLine("No accel report found, is it enabled?");
+                        throw;
                     }
                 }
             }
@@ -838,9 +784,10 @@ Implementation Notes
                     {
                         return this._readings[BNO_REPORT_GYROSCOPE];
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
-                        throw RuntimeError("No gyro report found, is it enabled?");
+                        Console.WriteLine("No gyro report found, is it enabled?");
+                        throw;
                     }
                 }
             }
@@ -855,20 +802,21 @@ Implementation Notes
             {
                 get
                 {
-                    this._process_available_packets();
+                    _process_available_packets();
                     try
                     {
-                        var shake_detected = this._readings[BNO_REPORT_SHAKE_DETECTOR];
+                        bool shake_detected = _readings[BNO_REPORT_SHAKE_DETECTOR];
                         // clear on read
                         if (shake_detected)
                         {
-                            this._readings[BNO_REPORT_SHAKE_DETECTOR] = false;
+                            _readings[BNO_REPORT_SHAKE_DETECTOR] = false;
                         }
                         return shake_detected;
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
-                        throw RuntimeError("No shake report found, is it enabled?");
+                        Console.WriteLine("No shake report found, is it enabled?");
+                        throw;
                     }
                 }
             }
@@ -888,15 +836,16 @@ Implementation Notes
             {
                 get
                 {
-                    this._process_available_packets();
+                    _process_available_packets();
                     try
                     {
                         var stability_classification = this._readings[BNO_REPORT_STABILITY_CLASSIFIER];
                         return stability_classification;
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
-                        throw RuntimeError("No stability classification report found, is it enabled?");
+                        Console.WriteLine("No stability classification report found, is it enabled?");
+                        throw;
                     }
                 }
             }
@@ -919,15 +868,16 @@ Implementation Notes
             {
                 get
                 {
-                    this._process_available_packets();
+                    _process_available_packets();
                     try
                     {
                         var activity_classification = this._readings[BNO_REPORT_ACTIVITY_CLASSIFIER];
                         return activity_classification;
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
-                        throw RuntimeError("No activity classification report found, is it enabled?");
+                        Console.WriteLine("No activity classification report found, is it enabled?");
+                        throw;
                     }
                 }
             }
@@ -937,15 +887,16 @@ Implementation Notes
             {
                 get
                 {
-                    this._process_available_packets();
+                    _process_available_packets();
                     try
                     {
                         var raw_acceleration = this._readings[BNO_REPORT_RAW_ACCELEROMETER];
                         return raw_acceleration;
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
-                        throw RuntimeError("No raw acceleration report found, is it enabled?");
+                        Console.WriteLine("No raw acceleration report found, is it enabled?");
+                        throw;
                     }
                 }
             }
@@ -955,15 +906,16 @@ Implementation Notes
             {
                 get
                 {
-                    this._process_available_packets();
+                    _process_available_packets();
                     try
                     {
                         var raw_gyro = this._readings[BNO_REPORT_RAW_GYROSCOPE];
                         return raw_gyro;
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
-                        throw RuntimeError("No raw gyro report found, is it enabled?");
+                        Console.WriteLine("No raw gyro report found, is it enabled?");
+                        throw;
                     }
                 }
             }
@@ -973,24 +925,25 @@ Implementation Notes
             {
                 get
                 {
-                    this._process_available_packets();
+                    _process_available_packets();
                     try
                     {
                         var raw_magnetic = this._readings[BNO_REPORT_RAW_MAGNETOMETER];
                         return raw_magnetic;
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
-                        throw RuntimeError("No raw magnetic report found, is it enabled?");
+                        Console.WriteLine("No raw magnetic report found, is it enabled?");
+                        throw;
                     }
                 }
             }
 
             // Begin the sensor's self-calibration routine
-            public virtual object begin_calibration()
+            public virtual void begin_calibration()
             {
                 // start calibration for accel, gyro, and mag
-                this._send_me_command(new List<object> {
+                _send_me_command(new List<int> {
                     1,
                     1,
                     1,
@@ -1001,7 +954,7 @@ Implementation Notes
                     0,
                     0
                 });
-                this._calibration_complete = false;
+                _calibration_complete = false;
             }
 
             // Get the status of the self-calibration
@@ -1009,7 +962,7 @@ Implementation Notes
             {
                 get
                 {
-                    this._send_me_command(new List<object> {
+                    this._send_me_command(new List<int> {
                         0,
                         0,
                         0,
@@ -1024,7 +977,7 @@ Implementation Notes
                 }
             }
 
-            public virtual object _send_me_command(object subcommand_params)
+            public virtual object _send_me_command(List<int> subcommand_params)
             {
                 var start_time = time.monotonic();
                 var local_buffer = this._command_buffer;
@@ -1058,17 +1011,17 @@ Implementation Notes
                         return;
                     }
                 }
-                throw RuntimeError("Could not save calibration data");
+                Console.WriteLine("Could not save calibration data");
             }
 
             //############## private/helper methods ###############
             // # decorator?
-            public virtual object _process_available_packets(object max_packets = null)
+            public virtual object _process_available_packets(int max_packets = null)
             {
-                var processed_count = 0;
-                while (this._data_ready)
+                int processed_count = 0;
+                while (_data_ready())
                 {
-                    if (max_packets && processed_count > max_packets)
+                    if (max_packets != null && processed_count > max_packets)
                     {
                         return;
                     }
@@ -1127,22 +1080,23 @@ Implementation Notes
                         this._handle_packet(new_packet);
                     }
                 }
-                throw RuntimeError("Timed out waiting for a packet on channel", channel_number);
+                Console.WriteLine("Timed out waiting for a packet on channel", channel_number);
             }
 
-            public virtual object _wait_for_packet(object timeout = _PACKET_READ_TIMEOUT)
+            public virtual object _wait_for_packet(double timeout = _PACKET_READ_TIMEOUT)
             {
                 var start_time = time.monotonic();
                 while (_elapsed(start_time) < timeout)
                 {
-                    if (!this._data_ready)
+                    if (_data_ready())
                     {
                         continue;
                     }
-                    var new_packet = this._read_packet();
+                    Packet new_packet = _read_packet();
                     return new_packet;
                 }
-                throw RuntimeError("Timed out waiting for a packet");
+                Console.WriteLine("Timed out waiting for a packet");
+
             }
 
             // update the cached sequence number so we know what to increment from
@@ -1155,7 +1109,7 @@ Implementation Notes
                 this._sequence_number[channel] = seq;
             }
 
-            public virtual object _handle_packet(object packet)
+            public virtual object _handle_packet(Packet packet)
             {
                 // split out reports first
                 try
@@ -1169,11 +1123,11 @@ Implementation Notes
                 catch (Exception)
                 {
                     Console.WriteLine(packet);
-                    throw error;
+                    throw;
                 }
             }
 
-            public virtual object _handle_control_report(object report_id, object report_bytes)
+            public virtual object _handle_control_report(int report_id, object report_bytes)
             {
                 if (report_id == _SHTP_REPORT_PRODUCT_ID_RESPONSE)
                 {
@@ -1219,7 +1173,7 @@ Implementation Notes
                     }
                     else
                     {
-                        throw RuntimeError("Unable to save calibration data");
+                        Console.WriteLine("Unable to save calibration data");
                     }
                 }
             }
@@ -1265,7 +1219,7 @@ Implementation Notes
                             this._readings[BNO_REPORT_SHAKE_DETECTOR] = shake_detected;
                         }
                     }
-                    catch (KeyError)
+                    catch (Exception)
                     {
                     }
                     return;
@@ -1283,7 +1237,7 @@ Implementation Notes
                     return;
                 }
                 var _tup_2 = _parse_sensor_report_data(report_bytes);
-                var sensor_data = _tup_2.Item1;
+                List<double> sensor_data = _tup_2.Item1;
                 var accuracy = _tup_2.Item2;
                 if (report_id == BNO_REPORT_MAGNETOMETER)
                 {
@@ -1341,10 +1295,10 @@ Implementation Notes
                         return;
                     }
                 }
-                throw RuntimeError("Was not able to enable feature", feature_id);
+                Console.WriteLine("Was not able to enable feature", feature_id);
             }
 
-            public virtual object _check_id()
+            public virtual bool _check_id()
             {
                 this._dbg("\n********** READ ID **********");
                 if (this._id_read)
@@ -1400,19 +1354,20 @@ Implementation Notes
                 }
             }
 
-            public virtual object _get_data(object index, object fmt_string)
+            public virtual object _get_data(int index, string fmt_string)
             {
                 // index arg is not including header, so add 4 into data buffer
-                var data_index = index + 4;
-                return unpack_from(fmt_string, this._data_buffer, offset: data_index)[0];
+                int data_index = index + 4;
+                return UnpackFrom(fmt_string, this._data_buffer, offset: data_index)[0];
             }
 
-            public object _data_ready
+            public bool _data_ready()
             {
-                get
-                {
-                    throw RuntimeError("Not implemented");
-                }
+
+                Console.WriteLine("Not implemented");
+
+                return true;
+
             }
 
             // pylint:disable=no-self-use
@@ -1446,7 +1401,7 @@ Implementation Notes
                 {
                     try
                     {
-                        var _packet = this._read_packet();
+                        Packet _packet = _read_packet();
                     }
                     catch (PacketError)
                     {
@@ -1457,14 +1412,15 @@ Implementation Notes
                 // all is good!
             }
 
-            public virtual object _send_packet(object channel, object data)
+            public virtual void _send_packet(object channel, object data)
             {
-                throw RuntimeError("Not implemented");
+                Console.WriteLine("Not implemented");
             }
 
-            public virtual object _read_packet()
+            public virtual Packet _read_packet()
             {
-                throw RuntimeError("Not implemented");
+                Console.WriteLine("Not implemented");
+                return null;
             }
 
             public virtual object _increment_report_seq(object report_id)
@@ -1477,6 +1433,14 @@ Implementation Notes
             {
                 return this._two_ended_sequence_numbers.get(report_id, 0);
             }
+
+
+
         }
+        public static int[] UnpackFrom(string format, int[] ints, int offset = 0)
+        {
+            return new int[0];
+        }
+
     }
 }

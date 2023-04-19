@@ -5,7 +5,7 @@ using System;
 using System.Device.I2c;
 using System.Numerics;
 using System.Threading;
-using Iot.Device.Bno055;
+using Iot.Device.;
 
 Console.WriteLine("Hello BNO055!");
 using I2cDevice i2cDevice = I2cDevice.Create(new I2cConnectionSettings(1, Bno055Sensor.DefaultI2cAddress));

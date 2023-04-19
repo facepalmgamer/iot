@@ -1,27 +1,19 @@
-﻿namespace Namespace
+﻿using System.Linq;
+using System;
+
+namespace Iot.Device.Bno08X
 {
 
-    using pack_into = @struct.pack_into;
+    // using pack_into = @struct.pack_into;
 
-    using i2c_device = adafruit_bus_device.i2c_device;
+    //using i2c_device = adafruit_bus_device.i2c_device;
 
-    using System.Linq;
 
-    using System;
-
-    public static class Module
+    public static partial class Module
     {
 
-        static Module()
-        {
-            @"
 
-    Subclass of `adafruit_bno08x.BNO08X` to use I2C
-
-";
-        }
-
-        public static object _BNO08X_DEFAULT_ADDRESS = @const(0x4A);
+        public const int _BNO08X_DEFAULT_ADDRESS = 0x4A;
 
         // Library for the BNO08x IMUs from Hillcrest Laboratories
         // 
@@ -32,7 +24,7 @@
             : BNO08X
         {
 
-            public BNO08X_I2C(object i2c_bus, object reset = null, object address = _BNO08X_DEFAULT_ADDRESS, object debug = false)
+            public BNO08X_I2C(object i2c_bus, object reset = null, int address = _BNO08X_DEFAULT_ADDRESS, bool debug = false)
             {
                 this.bus_device_obj = i2c_device.I2CDevice(i2c_bus, address);
                 base.@__init__(reset, debug);
